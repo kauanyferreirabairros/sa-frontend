@@ -10,6 +10,11 @@ export async function createTransaction(transaction) {
   return response.data
 }
 
+export async function updateTransaction(id, transaction) {
+  const response = await api.put(`/transactions/${id}`, transaction)
+  return response.data
+}
+
 export async function deleteTransaction(id) {
   await api.delete(`/transactions/${id}`)
 }

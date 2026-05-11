@@ -10,7 +10,7 @@ function SortIcon({ field, sortField, sortDir }) {
   )
 }
 
-export default function Tabela({ transactions, onDelete }) {
+export default function Tabela({ transactions, onDelete, onEdit }) {
   const [filterTipo, setFilterTipo] = useState('todos')
   const [sortField, setSortField] = useState('data')
   const [sortDir, setSortDir]   = useState('desc')
@@ -113,7 +113,14 @@ export default function Tabela({ transactions, onDelete }) {
                     {t.tipo === 'entrada' ? '+' : '−'}{formatCurrency(t.valor)}
                   </td>
                   <td className="td-date">{formatDate(t.data)}</td>
-                  <td>
+                  <td className="td-actions">
+                    <button
+                      className="edit-btn"
+                      onClick={() => onEdit(t)}
+                      title="Editar transação"
+                    >
+                      ✎
+                    </button>
                     <button
                       className="del-btn"
                       onClick={() => onDelete(t.id)}

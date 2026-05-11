@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { categorias } from '../data/transactions'
 
 const EMPTY_FORM = {
@@ -28,10 +28,27 @@ function Field({ label, error, children }) {
   )
 }
 
-export default function Formulario({ onAdd }) {
+export default function Formulario({ onSave, selectedTransaction, onCancelEdit }) {
   const [form, setForm]           = useState(EMPTY_FORM)
   const [formErrors, setFormErrors] = useState({})
   const [successMsg, setSuccessMsg] = useState('')
+
+  useEffect(() => {
+    if (selectedTransaction) {
+      setForm({
+        descricao: selectedTransaction.descricao || '',
+        categoria: selectedTransaction.categoria || '',
+        valor: selectedTransaction.valor ?? '',
+        data: selectedTransaction.data || '',
+        tipo: selectedTransaction.tipo || 'saida',
+      })
+      setSuccessMsg('')
+      setFormErrors({})
+    } else {
+      setForm(EMPTY_FORM)
+      setFormErrors({})
+    }
+  }, [selectedTransaction])
 
   function set(key, value) {
     setForm(prev => ({ ...prev, [key]: value }))
@@ -43,10 +60,15 @@ export default function Formulario({ onAdd }) {
       setFormErrors(errs)
       return
     }
-    onAdd({ ...form, valor: parseFloat(form.valor) })
+
+    onSave({
+      ...form,
+      valor: parseFloat(form.valor),
+    })
+
     setForm(EMPTY_FORM)
     setFormErrors({})
-    setSuccessMsg('Transação cadastrada com sucesso!')
+    setSuccessMsg(selectedTransaction ? 'Transação atualizada com sucesso!' : 'Transação cadastrada com sucesso!')
     setTimeout(() => setSuccessMsg(''), 3000)
   }
 
@@ -59,8 +81,8 @@ export default function Formulario({ onAdd }) {
     <div className="page">
       <header className="page-header">
         <div>
-          <h1>Cadastrar Transação</h1>
-          <p>Adicione uma nova movimentação financeira</p>
+          <h1>{selectedTransaction ? 'Editar Transação' : 'Cadastrar Transação'}</h1>
+          <p>{selectedTransaction ? 'Atualize os dados da movimentação' : 'Adicione uma nova movimentação financeira'}</p>
         </div>
       </header>
 
@@ -128,14 +150,25 @@ export default function Formulario({ onAdd }) {
 
         {/* ── Ações ── */}
         <div className="form-actions">
-          <button className="btn-cancel" onClick={handleClear}>
-            Limpar
-          </button>
+          {selectedTransaction ? (
+            <button className="btn-cancel" onClick={() => {
+              onCancelEdit()
+              setForm(EMPTY_FORM)
+              setFormErrors({})
+            }}>
+              Cancelar edição
+            </button>
+          ) : (
+            <button className="btn-cancel" onClick={handleClear}>
+              Limpar
+            </button>
+          )}
+
           <button
             className={`btn-submit ${form.tipo}`}
             onClick={handleSubmit}
           >
-            Cadastrar Transação
+            {selectedTransaction ? 'Salvar alterações' : 'Cadastrar Transação'}
           </button>
         </div>
       </div>
