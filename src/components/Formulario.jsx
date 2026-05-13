@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { categorias } from '../data/transactions'
 
 const EMPTY_FORM = {
@@ -11,10 +11,12 @@ const EMPTY_FORM = {
 
 function validate(form) {
   const errs = {}
-  if (!form.descricao.trim())                     errs.descricao = 'Obrigatório'
-  if (!form.categoria)                            errs.categoria = 'Obrigatório'
-  if (!form.valor || isNaN(form.valor) || +form.valor <= 0) errs.valor = 'Valor inválido'
-  if (!form.data)                                 errs.data      = 'Obrigatório'
+  if (!form.descricao.trim()) errs.descricao = 'Obrigatório'
+  if (!form.categoria) errs.categoria = 'Obrigatório'
+  if (!form.valor || Number.isNaN(Number(form.valor)) || Number(form.valor) <= 0) {
+    errs.valor = 'Valor inválido'
+  }
+  if (!form.data) errs.data = 'Obrigatório'
   return errs
 }
 
@@ -29,26 +31,18 @@ function Field({ label, error, children }) {
 }
 
 export default function Formulario({ onSave, selectedTransaction, onCancelEdit }) {
-  const [form, setForm]           = useState(EMPTY_FORM)
-  const [formErrors, setFormErrors] = useState({})
-  const [successMsg, setSuccessMsg] = useState('')
-
-  useEffect(() => {
-    if (selectedTransaction) {
-      setForm({
+  const [form, setForm] = useState(() => selectedTransaction
+    ? {
         descricao: selectedTransaction.descricao || '',
         categoria: selectedTransaction.categoria || '',
         valor: selectedTransaction.valor ?? '',
         data: selectedTransaction.data || '',
         tipo: selectedTransaction.tipo || 'saida',
-      })
-      setSuccessMsg('')
-      setFormErrors({})
-    } else {
-      setForm(EMPTY_FORM)
-      setFormErrors({})
-    }
-  }, [selectedTransaction])
+      }
+    : EMPTY_FORM
+  )
+  const [formErrors, setFormErrors] = useState({})
+  const [successMsg, setSuccessMsg] = useState('')
 
   function set(key, value) {
     setForm(prev => ({ ...prev, [key]: value }))
@@ -87,12 +81,10 @@ export default function Formulario({ onSave, selectedTransaction, onCancelEdit }
       </header>
 
       <div className="form-container">
-        {/* ── Feedback de sucesso ── */}
         {successMsg && (
           <div className="success-msg">{successMsg}</div>
         )}
 
-        {/* ── Seletor de tipo ── */}
         <div className="tipo-toggle">
           {['entrada', 'saida'].map(tipo => (
             <button
@@ -105,7 +97,6 @@ export default function Formulario({ onSave, selectedTransaction, onCancelEdit }
           ))}
         </div>
 
-        {/* ── Campos ── */}
         <div className="form-grid">
           <Field label="Descrição" error={formErrors.descricao}>
             <input
@@ -148,7 +139,6 @@ export default function Formulario({ onSave, selectedTransaction, onCancelEdit }
           </Field>
         </div>
 
-        {/* ── Ações ── */}
         <div className="form-actions">
           {selectedTransaction ? (
             <button className="btn-cancel" onClick={() => {

@@ -13,7 +13,7 @@ function SortIcon({ field, sortField, sortDir }) {
 export default function Tabela({ transactions, onDelete, onEdit }) {
   const [filterTipo, setFilterTipo] = useState('todos')
   const [sortField, setSortField] = useState('data')
-  const [sortDir, setSortDir]   = useState('desc')
+  const [sortDir, setSortDir] = useState('desc')
 
   function handleSort(field) {
     if (sortField === field) {
@@ -27,25 +27,29 @@ export default function Tabela({ transactions, onDelete, onEdit }) {
   const filtered = transactions
     .filter(t => filterTipo === 'todos' || t.tipo === filterTipo)
     .sort((a, b) => {
-      let va = a[sortField], vb = b[sortField]
-      if (sortField === 'valor') { va = +va; vb = +vb }
+      let va = a[sortField]
+      let vb = b[sortField]
+      if (sortField === 'valor') {
+        va = Number(va)
+        vb = Number(vb)
+      }
       if (va < vb) return sortDir === 'asc' ? -1 : 1
-      if (va > vb) return sortDir === 'asc' ?  1 : -1
+      if (va > vb) return sortDir === 'asc' ? 1 : -1
       return 0
     })
 
   const filters = [
-    { key: 'todos',  label: 'Todos'   },
+    { key: 'todos', label: 'Todos' },
     { key: 'entrada', label: 'Entradas' },
-    { key: 'saida',  label: 'Saídas'  },
+    { key: 'saida', label: 'Saídas' },
   ]
 
   const columns = [
     { key: 'descricao', label: 'Descrição' },
     { key: 'categoria', label: 'Categoria' },
-    { key: 'tipo',      label: 'Tipo'      },
-    { key: 'valor',     label: 'Valor'     },
-    { key: 'data',      label: 'Data'      },
+    { key: 'tipo', label: 'Tipo' },
+    { key: 'valor', label: 'Valor' },
+    { key: 'data', label: 'Data' },
   ]
 
   return (
@@ -110,7 +114,7 @@ export default function Tabela({ transactions, onDelete, onEdit }) {
                     </span>
                   </td>
                   <td className={`td-val ${t.tipo}`}>
-                    {t.tipo === 'entrada' ? '+' : '−'}{formatCurrency(t.valor)}
+                    {t.tipo === 'entrada' ? '+' : '-'}{formatCurrency(t.valor)}
                   </td>
                   <td className="td-date">{formatDate(t.data)}</td>
                   <td className="td-actions">
@@ -126,7 +130,7 @@ export default function Tabela({ transactions, onDelete, onEdit }) {
                       onClick={() => onDelete(t.id)}
                       title="Remover transação"
                     >
-                      ✕
+                      ×
                     </button>
                   </td>
                 </tr>

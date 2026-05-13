@@ -3,11 +3,11 @@ import { formatCurrency, formatDate } from '../utils/format'
 export default function Dashboard({ transactions }) {
   const totalEntradas = transactions
     .filter(t => t.tipo === 'entrada')
-    .reduce((s, t) => s + t.valor, 0)
+    .reduce((s, t) => s + Number(t.valor), 0)
 
   const totalSaidas = transactions
     .filter(t => t.tipo === 'saida')
-    .reduce((s, t) => s + t.valor, 0)
+    .reduce((s, t) => s + Number(t.valor), 0)
 
   const saldo = totalEntradas - totalSaidas
 
@@ -15,7 +15,7 @@ export default function Dashboard({ transactions }) {
   transactions
     .filter(t => t.tipo === 'saida')
     .forEach(t => {
-      categoriaMap[t.categoria] = (categoriaMap[t.categoria] || 0) + t.valor
+      categoriaMap[t.categoria] = (categoriaMap[t.categoria] || 0) + Number(t.valor)
     })
   const topCategorias = Object.entries(categoriaMap)
     .sort((a, b) => b[1] - a[1])
@@ -31,7 +31,6 @@ export default function Dashboard({ transactions }) {
         </div>
       </header>
 
-      {/* ── Cards de resumo ── */}
       <div className="cards">
         <div className="card card--saldo">
           <div className="card-label">Saldo Total</div>
@@ -66,9 +65,8 @@ export default function Dashboard({ transactions }) {
         </div>
       </div>
 
-      {/* ── Gráfico + Recentes ── */}
       <div className="dashboard-bottom">
-        <div className="chart-section">
+        <section className="chart-section">
           <h2>Gastos por Categoria</h2>
           {topCategorias.length === 0
             ? <p className="empty">Nenhum gasto registrado.</p>
@@ -88,9 +86,9 @@ export default function Dashboard({ transactions }) {
                 ))}
               </div>
             )}
-        </div>
+        </section>
 
-        <div className="recentes-section">
+        <section className="recentes-section">
           <h2>Últimas Transações</h2>
           <div className="recentes-list">
             {transactions.slice(0, 5).map(t => (
@@ -103,12 +101,12 @@ export default function Dashboard({ transactions }) {
                   </span>
                 </div>
                 <span className={`recente-val ${t.tipo}`}>
-                  {t.tipo === 'entrada' ? '+' : '−'}{formatCurrency(t.valor)}
+                  {t.tipo === 'entrada' ? '+' : '-'}{formatCurrency(t.valor)}
                 </span>
               </div>
             ))}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   )

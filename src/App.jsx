@@ -1,23 +1,32 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 import {
-  getTransactions,
   createTransaction,
-  updateTransaction,
   deleteTransaction,
+  getTransactions,
+  updateTransaction,
 } from './services/transactionService'
-import Sidebar    from './components/Sidebar'
-import Dashboard  from './components/Dashboard'
-import Tabela     from './components/Tabela'
+import {
+  getCurrentUser,
+  login,
+  logout,
+  register,
+} from './services/authService'
+import Dashboard from './components/Dashboard'
 import Formulario from './components/Formulario'
+import Login from './components/Login'
+import Sidebar from './components/Sidebar'
+import Tabela from './components/Tabela'
 
 export default function App() {
   const [transactions, setTransactions] = useState([])
-  const [activeTab, setActiveTab]       = useState('dashboard')
-  const [loading, setLoading]           = useState(true)
-  const [error, setError]               = useState(null)
-  const [message, setMessage]           = useState('')
+  const [activeTab, setActiveTab] = useState('dashboard')
+  const [booting, setBooting] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [message, setMessage] = useState('')
+  const [user, setUser] = useState(null)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
   async function loadTransactions() {
@@ -35,11 +44,47 @@ export default function App() {
   }
 
   useEffect(() => {
-    loadTransactions()
+    async function boot() {
+      try {
+        const currentUser = await getCurrentUser()
+        setUser(currentUser)
+        await loadTransactions()
+      } catch {
+        localStorage.removeItem('authToken')
+        setUser(null)
+        setTransactions([])
+      } finally {
+        setBooting(false)
+      }
+    }
+
+    boot()
   }, [])
 
+  async function handleLogin(credentials) {
+    const loggedUser = await login(credentials)
+    setUser(loggedUser)
+    await loadTransactions()
+  }
+
+  async function handleRegister(userData) {
+    const registeredUser = await register(userData)
+    setUser(registeredUser)
+    await loadTransactions()
+  }
+
+  async function handleLogout() {
+    await logout()
+    setUser(null)
+    setTransactions([])
+    setActiveTab('dashboard')
+    setSelectedTransaction(null)
+    setMessage('')
+    setError(null)
+  }
+
   const saldo = transactions.reduce(
-    (acc, t) => t.tipo === 'entrada' ? acc + t.valor : acc - t.valor,
+    (acc, t) => t.tipo === 'entrada' ? acc + Number(t.valor) : acc - Number(t.valor),
     0
   )
 
@@ -89,13 +134,23 @@ export default function App() {
   }
 
   const pages = {
-    dashboard:  <Dashboard  transactions={transactions} />,
-    transacoes: <Tabela     transactions={transactions} onDelete={handleDelete} onEdit={handleEdit} />,
-    cadastro:   <Formulario onSave={handleSave} selectedTransaction={selectedTransaction} onCancelEdit={() => setSelectedTransaction(null)} />,
+    dashboard: <Dashboard transactions={transactions} />,
+    transacoes: <Tabela transactions={transactions} onDelete={handleDelete} onEdit={handleEdit} />,
+    cadastro: (
+      <Formulario
+        key={selectedTransaction?.id || 'new-transaction'}
+        onSave={handleSave}
+        selectedTransaction={selectedTransaction}
+        onCancelEdit={() => setSelectedTransaction(null)}
+      />
+    ),
   }
 
-  if (loading) return <div className="app-loading">Carregando...</div>
-  if (error)   return <div className="app-error">{error}</div>
+  if (booting) return <div className="app-loading">Carregando...</div>
+
+  if (!user) {
+    return <Login onLogin={handleLogin} onRegister={handleRegister} />
+  }
 
   return (
     <div className="app">
@@ -103,13 +158,15 @@ export default function App() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         saldo={saldo}
+        user={user}
+        onLogout={handleLogout}
       />
 
       <main className="main">
         {message && <div className="app-success">{message}</div>}
-        {pages[activeTab]}
+        {error && <div className="app-error">{error}</div>}
+        {loading ? <div className="app-loading">Carregando...</div> : pages[activeTab]}
       </main>
     </div>
   )
 }
-

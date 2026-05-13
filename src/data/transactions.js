@@ -9,6 +9,14 @@ export const initialTransactions = [
 ]
 
 export const categorias = [
-  'Alimentação', 'Moradia', 'Transporte', 'Saúde',
-  'Educação', 'Lazer', 'Utilidades', 'Receita', 'Investimentos', 'Outros'
+  'Alimentação',
+  'Moradia',
+  'Transporte',
+  'Saúde',
+  'Educação',
+  'Lazer',
+  'Utilidades',
+  'Receita',
+  'Investimentos',
+  'Outros',
 ]
