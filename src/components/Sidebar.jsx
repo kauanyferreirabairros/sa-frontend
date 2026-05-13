@@ -1,6 +1,4 @@
 import { formatCurrency } from '../utils/format'
-import { useAuth } from '../context/AuthContext'
-import { logoutUser } from '../services/authService'
 
 const NAV_ITEMS = [
   { id: 'dashboard',  label: 'Dashboard'  },
@@ -9,17 +7,6 @@ const NAV_ITEMS = [
 ]
 
 export default function Sidebar({ activeTab, onTabChange, saldo }) {
-  const { user, logout } = useAuth()
-
-  async function handleLogout() {
-    try {
-      await logoutUser()
-    } catch (err) {
-      console.error('Erro ao fazer logout:', err)
-    }
-    logout()
-  }
-
   return (
     <aside className="sidebar">
       <div className="logo">
@@ -41,18 +28,12 @@ export default function Sidebar({ activeTab, onTabChange, saldo }) {
       </nav>
 
       <div className="sidebar-footer">
-        <div className="user-info">
-          <span className="user-name">{user?.displayName || user?.username || user?.email || 'Usuário'}</span>
-        </div>
         <div className="saldo-mini">
           <span>Saldo atual</span>
           <strong className={saldo >= 0 ? 'pos' : 'neg'}>
             {formatCurrency(saldo)}
           </strong>
         </div>
-        <button className="btn-logout" onClick={handleLogout} title="Fazer logout">
-          Sair
-        </button>
       </div>
     </aside>
   )

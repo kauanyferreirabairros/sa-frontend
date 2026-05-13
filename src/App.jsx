@@ -7,51 +7,36 @@ import {
   updateTransaction,
   deleteTransaction,
 } from './services/transactionService'
-import { useAuth } from './context/AuthContext'
 import Sidebar    from './components/Sidebar'
 import Dashboard  from './components/Dashboard'
 import Tabela     from './components/Tabela'
 import Formulario from './components/Formulario'
-import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
-  const { user, loggedIn, loading } = useAuth()
   const [transactions, setTransactions] = useState([])
   const [activeTab, setActiveTab]       = useState('dashboard')
-  const [appLoading, setAppLoading]           = useState(true)
+  const [loading, setLoading]           = useState(true)
   const [error, setError]               = useState(null)
   const [message, setMessage]           = useState('')
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
-  useEffect(() => {
-    if (loggedIn && !loading) {
-      loadTransactions()
-    } else if (!loading) {
-      setTransactions([])
-      setSelectedTransaction(null)
-      setMessage('')
-      setError(null)
-      setAppLoading(false)
-    }
-  }, [loggedIn, loading, user?.userid])
-
   async function loadTransactions() {
-    setAppLoading(true)
+    setLoading(true)
     setError(null)
 
     try {
       const data = await getTransactions()
-      const userId = user?.userid
-      const scopedTransactions = userId
-        ? (data || []).filter(t => Number(t.userid) === Number(userId))
-        : []
-      setTransactions(scopedTransactions)
+      setTransactions(data || [])
     } catch {
       setError('Erro ao carregar transações.')
     } finally {
-      setAppLoading(false)
+      setLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadTransactions()
+  }, [])
 
   const saldo = transactions.reduce(
     (acc, t) => t.tipo === 'entrada' ? acc + t.valor : acc - t.valor,
@@ -68,10 +53,7 @@ export default function App() {
         setTransactions(prev => prev.map(t => t.id === atualizada.id ? atualizada : t))
         setMessage('Transação atualizada com sucesso!')
       } else {
-        const criada = await createTransaction({
-          ...transaction,
-          userid: user?.userid,
-        })
+        const criada = await createTransaction(transaction)
         setTransactions(prev => [criada, ...prev])
         setMessage('Transação cadastrada com sucesso!')
       }
@@ -112,24 +94,22 @@ export default function App() {
     cadastro:   <Formulario onSave={handleSave} selectedTransaction={selectedTransaction} onCancelEdit={() => setSelectedTransaction(null)} />,
   }
 
-  if (loading || (loggedIn && appLoading)) return <div className="app-loading">Carregando transações...</div>
+  if (loading) return <div className="app-loading">Carregando...</div>
   if (error)   return <div className="app-error">{error}</div>
 
   return (
-    <ProtectedRoute>
-      <div className="app">
-        <Sidebar
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          saldo={saldo}
-        />
+    <div className="app">
+      <Sidebar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        saldo={saldo}
+      />
 
-        <main className="main">
-          {message && <div className="app-success">{message}</div>}
-          {pages[activeTab]}
-        </main>
-      </div>
-    </ProtectedRoute>
+      <main className="main">
+        {message && <div className="app-success">{message}</div>}
+        {pages[activeTab]}
+      </main>
+    </div>
   )
 }
 
