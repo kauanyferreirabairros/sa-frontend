@@ -74,13 +74,16 @@ export default function App() {
   }
 
   async function handleLogout() {
-    await logout()
-    setUser(null)
-    setTransactions([])
-    setActiveTab('dashboard')
-    setSelectedTransaction(null)
-    setMessage('')
-    setError(null)
+    try {
+      await logout()
+    } finally {
+      setUser(null)
+      setTransactions([])
+      setActiveTab('dashboard')
+      setSelectedTransaction(null)
+      setMessage('')
+      setError(null)
+    }
   }
 
   const saldo = transactions.reduce(
