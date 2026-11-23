@@ -28,14 +28,16 @@ export default function App() {
   const [message, setMessage] = useState('')
   const [user, setUser] = useState(null)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
+  const [transactionPage, setTransactionPage] = useState({ page: 1, pageSize: 10, total: 0, totalPages: 0 })
 
-  async function loadTransactions() {
+  async function loadTransactions(params = {}) {
     setLoading(true)
     setError(null)
 
     try {
-      const data = await getTransactions()
-      setTransactions(data || [])
+      const result = await getTransactions({ page: 1, pageSize: 10, ...params })
+      setTransactions(result.data || [])
+      setTransactionPage(result.pagination || { page: 1, pageSize: 10, total: result.data?.length || 0, totalPages: 1 })
     } catch {
       setError('Erro ao carregar transações.')
     } finally {
@@ -138,7 +140,7 @@ export default function App() {
 
   const pages = {
     dashboard: <Dashboard transactions={transactions} />,
-    transacoes: <Tabela transactions={transactions} onDelete={handleDelete} onEdit={handleEdit} />,
+    transacoes: <Tabela transactions={transactions} pagination={transactionPage} onQueryChange={loadTransactions} onDelete={handleDelete} onEdit={handleEdit} />,
     cadastro: (
       <Formulario
         key={selectedTransaction?.id || 'new-transaction'}

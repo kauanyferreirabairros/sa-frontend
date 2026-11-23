@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { formatCurrency, formatDate } from '../utils/format'
 
 function SortIcon({ field, sortField, sortDir }) {
@@ -10,33 +10,41 @@ function SortIcon({ field, sortField, sortDir }) {
   )
 }
 
-export default function Tabela({ transactions, onDelete, onEdit }) {
+export default function Tabela({ transactions, pagination, onQueryChange, onDelete, onEdit }) {
   const [filterTipo, setFilterTipo] = useState('todos')
   const [sortField, setSortField] = useState('data')
   const [sortDir, setSortDir] = useState('desc')
+  const [search, setSearch] = useState('')
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setQuery(search.trim()), 300)
+    return () => clearTimeout(timer)
+  }, [search])
+
+  useEffect(() => {
+    onQueryChange({
+      page,
+      pageSize: pagination?.pageSize || 10,
+      ...(filterTipo !== 'todos' && { tipo: filterTipo }),
+      ...(query && { q: query }),
+      sortBy: sortField,
+      sortOrder: sortDir,
+    })
+  }, [page, filterTipo, query, sortField, sortDir])
 
   function handleSort(field) {
     if (sortField === field) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+      setSortDir(current => current === 'asc' ? 'desc' : 'asc')
     } else {
       setSortField(field)
       setSortDir('asc')
     }
+    setPage(1)
   }
 
   const filtered = transactions
-    .filter(t => filterTipo === 'todos' || t.tipo === filterTipo)
-    .sort((a, b) => {
-      let va = a[sortField]
-      let vb = b[sortField]
-      if (sortField === 'valor') {
-        va = Number(va)
-        vb = Number(vb)
-      }
-      if (va < vb) return sortDir === 'asc' ? -1 : 1
-      if (va > vb) return sortDir === 'asc' ? 1 : -1
-      return 0
-    })
 
   const filters = [
     { key: 'todos', label: 'Todos' },
@@ -65,12 +73,13 @@ export default function Tabela({ transactions, onDelete, onEdit }) {
             <button
               key={f.key}
               className={`filter-btn${filterTipo === f.key ? ' active' : ''}`}
-              onClick={() => setFilterTipo(f.key)}
+              onClick={() => { setFilterTipo(f.key); setPage(1) }}
             >
               {f.label}
             </button>
           ))}
         </div>
+        <input aria-label="Buscar transações" placeholder="Buscar descrição ou categoria" value={search} onChange={event => { setSearch(event.target.value); setPage(1) }} />
       </header>
 
       <div className="table-wrap">
@@ -140,7 +149,9 @@ export default function Tabela({ transactions, onDelete, onEdit }) {
       </div>
 
       <div className="table-footer">
-        {filtered.length} registro(s) exibido(s)
+        {pagination?.total ?? filtered.length} registro(s) · Página {pagination?.page || page} de {Math.max(1, pagination?.totalPages || 1)}
+        <button disabled={page <= 1} onClick={() => setPage(current => current - 1)}>Anterior</button>
+        <button disabled={page >= (pagination?.totalPages || 1)} onClick={() => setPage(current => current + 1)}>Próxima</button>
       </div>
     </div>
   )
