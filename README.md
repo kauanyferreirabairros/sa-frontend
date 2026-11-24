@@ -117,9 +117,9 @@ http://localhost:3000
 
 Em produção, `VITE_API_URL` é obrigatória, deve usar HTTPS e é incorporada ao bundle no momento do build. O `vite.config.js` interrompe o build quando a variável está ausente ou inválida. O arquivo `.env.example` mostra o formato esperado; configure o valor real no painel do provedor e faça um novo deploy após alterá-lo.
 
-### Deploy na Vercel
+### Deploy no Netlify
 
-O `vercel.json` mantém as rotas da aplicação de página única apontando para `index.html`. Configure a raiz do projeto como `sa-frontend/`, defina `VITE_API_URL` com a URL pública da API e use `npm run build` como comando de build. O diretório gerado é `dist`.
+O frontend está hospedado no **Netlify**, no site `https://safecash3b.netlify.app/`. O deploy não é feito pela Vercel. No Netlify, a raiz do projeto é `sa-frontend/`, o comando de build é `npm run build` e o diretório publicado é `dist`. Configure a variável `VITE_API_URL` como `https://backend-sa-lkje.onrender.com` nas configurações do site. Como essa variável é incorporada ao bundle durante o build, faça um novo deploy após alterá-la.
 
 Antes de cada requisição, o interceptor verifica o `authToken` e, quando
 existe, adiciona:
