@@ -22,21 +22,21 @@ function validate(form) {
 
 function Field({ label, error, children }) {
   return (
-    <div className={`field${error ? ' field--error' : ''}`}>
-      <label>{label}</label>
+    <label className={`field${error ? ' field--error' : ''}`}>
+      <span>{label}</span>
       {children}
-      {error && <span className="field-error">{error}</span>}
-    </div>
+      {error && <small className="field-error">{error}</small>}
+    </label>
   )
 }
 
-export default function Formulario({ onSave, selectedTransaction, onCancelEdit }) {
+export default function Formulario({ onSave, selectedTransaction, onCancelEdit, saving }) {
   const [form, setForm] = useState(() => selectedTransaction
     ? {
         descricao: selectedTransaction.descricao || '',
         categoria: selectedTransaction.categoria || '',
         valor: selectedTransaction.valor ?? '',
-        data: selectedTransaction.data || '',
+        data: selectedTransaction.data ? new Date(selectedTransaction.data).toISOString().slice(0, 10) : '',
         tipo: selectedTransaction.tipo || 'saida',
       }
     : EMPTY_FORM
@@ -48,22 +48,25 @@ export default function Formulario({ onSave, selectedTransaction, onCancelEdit }
     setForm(prev => ({ ...prev, [key]: value }))
   }
 
-  function handleSubmit() {
+  async function handleSubmit(event) {
+    event.preventDefault()
     const errs = validate(form)
     if (Object.keys(errs).length) {
       setFormErrors(errs)
       return
     }
 
-    onSave({
+    const saved = await onSave({
       ...form,
       valor: parseFloat(form.valor),
     })
 
-    setForm(EMPTY_FORM)
-    setFormErrors({})
-    setSuccessMsg(selectedTransaction ? 'Transação atualizada com sucesso!' : 'Transação cadastrada com sucesso!')
-    setTimeout(() => setSuccessMsg(''), 3000)
+    if (saved) {
+      setForm(EMPTY_FORM)
+      setFormErrors({})
+      setSuccessMsg(selectedTransaction ? 'Transação atualizada com sucesso!' : 'Transação cadastrada com sucesso!')
+      setTimeout(() => setSuccessMsg(''), 3000)
+    }
   }
 
   function handleClear() {
@@ -80,7 +83,7 @@ export default function Formulario({ onSave, selectedTransaction, onCancelEdit }
         </div>
       </header>
 
-      <div className="form-container">
+      <form className="form-container" onSubmit={handleSubmit}>
         {successMsg && (
           <div className="success-msg">{successMsg}</div>
         )}
@@ -90,6 +93,7 @@ export default function Formulario({ onSave, selectedTransaction, onCancelEdit }
             <button
               key={tipo}
               className={`tipo-btn ${tipo}${form.tipo === tipo ? ' active' : ''}`}
+              type="button"
               onClick={() => set('tipo', tipo)}
             >
               {tipo === 'entrada' ? '↑ Entrada' : '↓ Saída'}
@@ -141,7 +145,7 @@ export default function Formulario({ onSave, selectedTransaction, onCancelEdit }
 
         <div className="form-actions">
           {selectedTransaction ? (
-            <button className="btn-cancel" onClick={() => {
+            <button type="button" className="btn-cancel" onClick={() => {
               onCancelEdit()
               setForm(EMPTY_FORM)
               setFormErrors({})
@@ -149,19 +153,20 @@ export default function Formulario({ onSave, selectedTransaction, onCancelEdit }
               Cancelar edição
             </button>
           ) : (
-            <button className="btn-cancel" onClick={handleClear}>
+            <button type="button" className="btn-cancel" onClick={handleClear}>
               Limpar
             </button>
           )}
 
           <button
             className={`btn-submit ${form.tipo}`}
-            onClick={handleSubmit}
+            type="submit"
+            disabled={saving}
           >
-            {selectedTransaction ? 'Salvar alterações' : 'Cadastrar Transação'}
+            {saving ? 'Salvando…' : selectedTransaction ? 'Salvar alterações' : 'Cadastrar transação'}
           </button>
         </div>
-      </div>
+      </form>
     </div>
   )
 }

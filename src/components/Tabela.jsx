@@ -19,6 +19,15 @@ export default function Tabela({ transactions, pagination, loading, onQueryChang
   const [page, setPage] = useState(1)
   const [dataInicio, setDataInicio] = useState('')
   const [dataFim, setDataFim] = useState('')
+  const [pendingDelete, setPendingDelete] = useState(null)
+
+  useEffect(() => {
+    function handleEscape(event) {
+      if (event.key === 'Escape') setPendingDelete(null)
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(() => setQuery(search.trim()), 300)
@@ -95,17 +104,11 @@ export default function Tabela({ transactions, pagination, loading, onQueryChang
           <thead>
             <tr>
               {columns.map(col => (
-                <th
-                  key={col.key}
-                  className="sortable"
-                  onClick={() => handleSort(col.key)}
-                >
-                  {col.label}{' '}
-                  <SortIcon
-                    field={col.key}
-                    sortField={sortField}
-                    sortDir={sortDir}
-                  />
+                <th key={col.key} className="sortable">
+                  <button type="button" onClick={() => handleSort(col.key)} aria-label={`Ordenar por ${col.label}`}>
+                    {col.label}{' '}
+                    <SortIcon field={col.key} sortField={sortField} sortDir={sortDir} />
+                  </button>
                 </th>
               ))}
               <th>Ação</th>
@@ -144,7 +147,7 @@ export default function Tabela({ transactions, pagination, loading, onQueryChang
                     </button>
                     <button
                       className="del-btn"
-                      onClick={() => onDelete(t.id)}
+                      onClick={() => setPendingDelete(t)}
                       title="Remover transação"
                     >
                       ×
@@ -155,6 +158,19 @@ export default function Tabela({ transactions, pagination, loading, onQueryChang
           </tbody>
         </table>
       </div>
+      {pendingDelete && (
+        <div className="modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setPendingDelete(null) }}>
+          <section className="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+            <span className="modal-kicker">Confirmar ação</span>
+            <h2 id="delete-title">Excluir esta transação?</h2>
+            <p>“{pendingDelete.descricao}” será removida da lista e dos totais. O registro será preservado para auditoria.</p>
+            <div className="modal-actions">
+              <button type="button" className="btn-cancel" autoFocus onClick={() => setPendingDelete(null)}>Cancelar</button>
+              <button type="button" className="del-confirm" onClick={async () => { const deleted = await onDelete(pendingDelete.id); if (deleted) setPendingDelete(null) }}>Excluir transação</button>
+            </div>
+          </section>
+        </div>
+      )}
 
       <div className="table-footer">
         {pagination?.total ?? filtered.length} registro(s) · Página {pagination?.page || page} de {Math.max(1, pagination?.totalPages || 1)}

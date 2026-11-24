@@ -4,7 +4,7 @@ export function formatCurrency(val) {
 
 export function formatDate(d) {
   if (!d || typeof d !== 'string') return ''
-  const [y, m, day] = d.split('-')
+  const [y, m, day] = d.slice(0, 10).split('-')
   if (!y || !m || !day) return d
   return `${day}/${m}/${y}`
 }

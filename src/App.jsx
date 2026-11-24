@@ -19,12 +19,14 @@ import Formulario from './components/Formulario'
 import Login from './components/Login'
 import Sidebar from './components/Sidebar'
 import Tabela from './components/Tabela'
+import FeedbackToast from './components/FeedbackToast'
 
 export default function App() {
   const [transactions, setTransactions] = useState([])
   const [activeTab, setActiveTab] = useState('dashboard')
   const [booting, setBooting] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
   const [message, setMessage] = useState('')
   const [user, setUser] = useState(null)
@@ -32,6 +34,13 @@ export default function App() {
   const [transactionPage, setTransactionPage] = useState({ page: 1, pageSize: 10, total: 0, totalPages: 0 })
   const [dashboard, setDashboard] = useState(null)
   const [dataVersion, setDataVersion] = useState(0)
+  const closeFeedback = useCallback(() => { setMessage(''); setError(null) }, [])
+
+  useEffect(() => {
+    if (!message && !error) return undefined
+    const timer = window.setTimeout(() => { setMessage(''); setError(null) }, error ? 7000 : 4000)
+    return () => window.clearTimeout(timer)
+  }, [message, error])
 
   const loadTransactions = useCallback(async (params = {}) => {
     setLoading(true)
@@ -103,6 +112,7 @@ export default function App() {
   const saldo = dashboard?.geral?.saldo ?? 0
 
   async function handleSave(transaction) {
+    setSaving(true)
     setError(null)
     setMessage('')
 
@@ -121,8 +131,12 @@ export default function App() {
       setActiveTab('dashboard')
       setDataVersion(version => version + 1)
       await loadDashboard()
-    } catch {
-      setError('Erro ao salvar transação.')
+      return true
+    } catch (saveError) {
+      setError(saveError.response?.data?.error || 'Não foi possível salvar a transação.')
+      return false
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -139,8 +153,10 @@ export default function App() {
         setSelectedTransaction(null)
       }
       setMessage('Transação excluída com sucesso!')
-    } catch {
-      setError('Erro ao excluir transação.')
+      return true
+    } catch (deleteError) {
+      setError(deleteError.response?.data?.error || 'Não foi possível excluir a transação.')
+      return false
     }
   }
 
@@ -158,6 +174,7 @@ export default function App() {
       <Formulario
         key={selectedTransaction?.id || 'new-transaction'}
         onSave={handleSave}
+        saving={saving}
         selectedTransaction={selectedTransaction}
         onCancelEdit={() => setSelectedTransaction(null)}
       />
@@ -181,8 +198,7 @@ export default function App() {
       />
 
       <main className="main">
-        {message && <div className="app-success">{message}</div>}
-        {error && <div className="app-error">{error}</div>}
+        <FeedbackToast message={error || message} type={error ? 'error' : 'success'} onClose={closeFeedback} />
         {pages[activeTab]}
       </main>
     </div>

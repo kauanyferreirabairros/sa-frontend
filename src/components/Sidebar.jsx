@@ -16,11 +16,12 @@ export default function Sidebar({ activeTab, onTabChange, saldo, user, onLogout 
         <span className="logo-text">Finança<em>S</em></span>
       </div>
 
-      <nav className="nav">
+      <nav className="nav" aria-label="Navegação principal">
         {NAV_ITEMS.map(item => (
           <button
             key={item.id}
             className={`nav-item${activeTab === item.id ? ' active' : ''}`}
+            aria-current={activeTab === item.id ? 'page' : undefined}
             onClick={() => onTabChange(item.id)}
           >
             <span className="nav-icon">›</span>

@@ -1,11 +1,11 @@
 import { formatCurrency, formatDate } from '../utils/format'
 
 export default function Dashboard({ transactions, dashboard }) {
-  const totalEntradas = dashboard?.geral?.entradas ?? transactions
+  const totalEntradas = dashboard?.periodoAtual?.entradas ?? dashboard?.geral?.entradas ?? transactions
     .filter(t => t.tipo === 'entrada')
     .reduce((s, t) => s + Number(t.valor), 0)
 
-  const totalSaidas = dashboard?.geral?.saidas ?? transactions
+  const totalSaidas = dashboard?.periodoAtual?.saidas ?? dashboard?.geral?.saidas ?? transactions
     .filter(t => t.tipo === 'saida')
     .reduce((s, t) => s + Number(t.valor), 0)
 
@@ -29,13 +29,13 @@ export default function Dashboard({ transactions, dashboard }) {
       <header className="page-header">
         <div>
           <h1>Dashboard</h1>
-          <p>Visão geral do sistema financeiro</p>
+          <p>Resumo do seu fluxo financeiro neste período</p>
         </div>
       </header>
 
       <div className="cards">
         <div className="card card--saldo">
-          <div className="card-label">Saldo Total</div>
+          <div className="card-label">Saldo acumulado</div>
           <div className={`card-value ${saldo >= 0 ? 'pos' : 'neg'}`}>
             {formatCurrency(saldo)}
           </div>
@@ -45,25 +45,25 @@ export default function Dashboard({ transactions, dashboard }) {
         </div>
 
         <div className="card card--entrada">
-          <div className="card-label">Total Entradas</div>
+          <div className="card-label">Entradas no período</div>
           <div className="card-value pos">{formatCurrency(totalEntradas)}</div>
           <div className="card-sub">
-            {dashboard?.geral?.quantidadeEntradas ?? transactions.filter(t => t.tipo === 'entrada').length} transações
+            {dashboard?.periodoAtual?.quantidadeEntradas ?? transactions.filter(t => t.tipo === 'entrada').length} transações
           </div>
         </div>
 
         <div className="card card--saida">
-          <div className="card-label">Total Saídas</div>
+          <div className="card-label">Saídas no período</div>
           <div className="card-value neg">{formatCurrency(totalSaidas)}</div>
           <div className="card-sub">
-            {dashboard?.geral?.quantidadeSaidas ?? transactions.filter(t => t.tipo === 'saida').length} transações
+            {dashboard?.periodoAtual?.quantidadeSaidas ?? transactions.filter(t => t.tipo === 'saida').length} transações
           </div>
         </div>
 
         <div className="card card--count">
-          <div className="card-label">Transações</div>
-          <div className="card-value neutral">{dashboard?.geral?.quantidade ?? transactions.length}</div>
-          <div className="card-sub">registros no total</div>
+          <div className="card-label">Movimentações no período</div>
+          <div className="card-value neutral">{dashboard?.periodoAtual?.quantidade ?? dashboard?.geral?.quantidade ?? transactions.length}</div>
+          <div className="card-sub">entradas e saídas</div>
         </div>
       </div>
 

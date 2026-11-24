@@ -599,3 +599,162 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* FinTech Flow visual system: quiet charcoal surfaces and clear money states. */
+.app { grid-template-columns: 248px minmax(0, 1fr); }
+.sidebar {
+  z-index: 2;
+  border-right: 1px solid var(--border);
+  background: #141615;
+  color: var(--text);
+}
+.logo { gap: 12px; letter-spacing: -.03em; }
+.logo-icon {
+  width: 36px; height: 36px; border-radius: 11px;
+  background: var(--primary); color: #101411;
+  box-shadow: 0 5px 18px rgb(138 224 178 / 16%);
+}
+.logo-text { font-size: 17px; }
+.logo-text em { color: var(--primary); }
+.nav { gap: 6px; margin-top: 48px; }
+.nav-item { min-height: 46px; border-radius: 10px; font-weight: 550; }
+.nav-item:hover, .nav-item.active { background: #232724; color: var(--text); }
+.nav-item.active { box-shadow: inset 2px 0 var(--primary); }
+.nav-icon { display: inline-grid; width: 22px; place-items: center; color: var(--primary); }
+.user-mini, .saldo-mini { border-radius: 12px; background: #1a1d1b; }
+.logout-btn {
+  border-radius: 10px; background: #232724; color: var(--text); font-weight: 650;
+}
+.logout-btn:hover { background: #303632; }
+.main { max-width: 1560px; width: 100%; margin: 0 auto; padding: 36px clamp(20px, 4vw, 56px); }
+.page { gap: 26px; }
+.page-header { align-items: center; flex-wrap: wrap; gap: 16px; }
+.page-header h1 { font-size: clamp(28px, 3.2vw, 38px); letter-spacing: -.045em; }
+.page-header p { font-size: 14px; }
+.cards { gap: 14px; }
+.card, .chart-section, .recentes-section, .form-container, .table-wrap, .table-footer {
+  border-color: #2c302d; border-radius: 14px; background: #181b19; box-shadow: var(--shadow);
+}
+.card { min-height: 144px; padding: 20px 22px; }
+.card-label { font-size: 13px; letter-spacing: .01em; }
+.card-value { margin: 18px 0 8px; font-size: clamp(24px, 2.5vw, 32px); letter-spacing: -.04em; }
+.card-sub { font-size: 12px; }
+.dashboard-bottom { gap: 14px; }
+.chart-section, .recentes-section { padding: 22px; }
+.chart-section h2, .recentes-section h2 { font-size: 16px; letter-spacing: -.02em; }
+.bar-fill { background: linear-gradient(90deg, #70c995, #a3e7c1); }
+.bar-track { background: #292e2b; }
+.recente-item { min-height: 52px; padding: 7px 0; border-bottom: 1px solid #292e2b; }
+.recente-item:last-child { border-bottom: 0; }
+.filter-group, .tipo-toggle, .auth-tabs { border-color: var(--border); border-radius: 10px; background: #141615; }
+.filter-btn, .tipo-btn, .auth-tabs button { border-radius: 8px; }
+.filter-btn.active, .tipo-btn.active, .auth-tabs button.active { background: #2a342e; color: var(--primary); }
+.table-wrap { padding: 4px 12px; }
+.table { min-width: 760px; }
+.table th, .table td { padding: 15px 12px; border-color: #2c302d; }
+.table th button {
+  padding: 0; border: 0; background: transparent; color: inherit;
+  font-size: inherit; font-weight: inherit; text-transform: inherit;
+}
+.sortable:hover { color: var(--text); }
+.sort-icon.active { color: var(--primary); }
+.badge { border-radius: 99px; background: #252a27; color: #c2c8c3; }
+.tipo-tag { border-radius: 99px; }
+.edit-btn, .del-btn { border-radius: 8px; }
+.edit-btn { background: #29352e; color: var(--primary); }
+.del-btn { background: #382624; color: var(--danger); }
+.table-footer {
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+  color: var(--muted); font-size: 13px; box-shadow: none;
+}
+.table-footer button, .modal-actions button {
+  min-height: 38px; padding: 0 14px; border: 1px solid var(--border);
+  border-radius: 9px; background: #222523; color: var(--text);
+}
+.table-footer button:disabled { cursor: not-allowed; opacity: .45; }
+.form-container { padding: clamp(20px, 3vw, 30px); }
+.field input, .field select, .auth-field input, .page-header input {
+  border-color: #353a36; border-radius: 9px; background: #121413; color: var(--text);
+}
+.field > span { color: var(--text); font-size: 14px; font-weight: 600; }
+.field input:focus, .field select:focus, .auth-field input:focus { border-color: var(--primary); }
+.btn-cancel, .btn-submit, .auth-submit { border-radius: 9px; }
+.btn-cancel { background: #262a27; color: var(--text); }
+.btn-submit, .auth-submit { background: var(--primary); color: #111612; }
+.btn-submit:hover, .auth-submit:hover { background: var(--primary-dark); }
+.auth-page { background: radial-gradient(ellipse at 50% 0%, #202a23, transparent 38rem), var(--bg); }
+.auth-panel {
+  border-color: #303632; border-radius: 18px; background: #171a18;
+  box-shadow: 0 28px 90px rgb(0 0 0 / 38%);
+}
+.auth-brand { gap: 12px; font-size: 17px; }
+.auth-brand .logo-icon { color: #111612; }
+.auth-heading h1 { letter-spacing: -.04em; }
+.auth-tabs { padding: 5px; }
+.auth-tabs button { flex: 1; }
+.auth-submit { min-height: 48px; }
+.app-error, .app-success, .auth-error {
+  border-radius: 10px; box-shadow: var(--shadow);
+}
+.toast {
+  position: fixed; z-index: 20; top: 22px; right: 24px;
+  display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 12px;
+  width: min(440px, calc(100vw - 32px)); padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: #1c201d; color: var(--text); box-shadow: 0 20px 60px rgb(0 0 0 / 42%);
+  animation: toast-in .18s ease-out;
+}
+.toast p { margin: 0; font-size: 14px; line-height: 1.45; }
+.toast-indicator { width: 9px; height: 9px; border-radius: 50%; background: var(--success); }
+.toast--error { border-color: #5b3431; background: #261c1b; }
+.toast--error .toast-indicator { background: var(--danger); }
+.toast button { border: 0; background: transparent; color: var(--muted); font-size: 22px; line-height: 1; }
+.modal-backdrop {
+  position: fixed; z-index: 15; inset: 0; display: grid; place-items: center;
+  padding: 20px; background: rgb(0 0 0 / 68%); backdrop-filter: blur(5px);
+}
+.confirm-modal {
+  width: min(100%, 440px); padding: 26px; border: 1px solid #3a403b;
+  border-radius: 16px; background: #1a1d1b; box-shadow: 0 28px 90px rgb(0 0 0 / 55%);
+}
+.confirm-modal h2 { margin: 9px 0; font-size: 22px; letter-spacing: -.03em; }
+.confirm-modal p { color: var(--muted); line-height: 1.6; }
+.modal-kicker { color: var(--warning); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.modal-actions .del-confirm { border: 0; border-radius: 9px; background: var(--danger); color: #201211; font-weight: 700; }
+.page-header > input[aria-label="Buscar transações"] { min-width: 240px; padding: 0 14px; }
+.page-header label { color: var(--muted); font-size: 12px; }
+.page-header label input { min-height: 42px; margin-left: 5px; padding: 0 10px; }
+.page-header input { min-height: 42px; }
+.table-footer button:hover:not(:disabled), .modal-actions button:hover { border-color: #59615b; }
+.btn-submit:disabled, .auth-submit:disabled { cursor: wait; opacity: .6; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 920px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { height: auto; padding: 14px 18px; }
+  .nav { margin-top: 18px; }
+  .sidebar-footer { grid-template-columns: 1fr 1fr auto; }
+  .main { padding: 26px 20px; }
+}
+@media (max-width: 620px) {
+  .sidebar { padding: 12px; }
+  .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .nav-item { justify-content: center; gap: 5px; padding: 10px 5px; font-size: 12px; }
+  .nav-icon { display: none; }
+  .sidebar-footer { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .logout-btn { grid-column: 1 / -1; }
+  .main { padding: 22px 14px; }
+  .page-header { align-items: stretch; }
+  .filter-group { justify-content: space-between; }
+  .page-header > input[aria-label="Buscar transações"] { width: 100%; }
+  .page-header label { display: flex; align-items: center; flex: 1; }
+  .page-header label input { min-width: 0; width: 100%; }
+  .table-footer { flex-wrap: wrap; justify-content: center; }
+  .form-actions, .modal-actions { flex-direction: column-reverse; }
+  .form-actions button, .modal-actions button { width: 100%; min-height: 44px; }
+  .toast { top: 12px; right: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
