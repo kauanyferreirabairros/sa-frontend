@@ -106,8 +106,7 @@ export default function Login({ onLogin, onRegister }) {
     <main className="auth-page">
       <section className="auth-panel">
         <div className="auth-brand">
-          <span className="logo-icon">◆</span>
-          <strong>FinançaS</strong>
+          <strong>SafeCash</strong>
         </div>
 
         <div className="auth-heading">

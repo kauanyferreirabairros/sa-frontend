@@ -33,6 +33,7 @@ export default function Dashboard({ transactions, dashboard }) {
         </div>
       </header>
 
+      <section className="dashboard-overview" aria-label="Visão geral financeira">
       <div className="cards">
         <div className="card card--saldo">
           <div className="card-label">Saldo acumulado</div>
@@ -110,6 +111,7 @@ export default function Dashboard({ transactions, dashboard }) {
           </div>
         </section>
       </div>
+      </section>
     </div>
   )
 }

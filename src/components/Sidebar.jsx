@@ -12,8 +12,7 @@ export default function Sidebar({ activeTab, onTabChange, saldo, user, onLogout 
   return (
     <aside className="sidebar">
       <div className="logo">
-        <span className="logo-icon">◆</span>
-        <span className="logo-text">Finança<em>S</em></span>
+        <span className="logo-text">SafeCash</span>
       </div>
 
       <nav className="nav" aria-label="Navegação principal">
@@ -24,7 +23,6 @@ export default function Sidebar({ activeTab, onTabChange, saldo, user, onLogout 
             aria-current={activeTab === item.id ? 'page' : undefined}
             onClick={() => onTabChange(item.id)}
           >
-            <span className="nav-icon">›</span>
             {item.label}
           </button>
         ))}

@@ -1,45 +1,88 @@
-:root {
-  --bg: #101111;
-  --surface: #181a19;
-  --surface-strong: #222523;
-  --text: #f0f2ef;
-  --muted: #9a9f9b;
-  --border: #303431;
-  --primary: #8ae0b2;
-  --primary-dark: #67c994;
-  --success: #8ae0b2;
-  --success-bg: #1c3026;
-  --danger: #f18a83;
-  --danger-bg: #382322;
-  --warning: #e9bd76;
-  --shadow: 0 18px 50px rgb(0 0 0 / 24%);
+/* SafeCash — papel, tinta e uma cor de destaque, com Space Mono. */
 
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: var(--text);
-  background: var(--bg);
+:root {
+  --paper: #f3f1ea;
+  --panel: #eeece4;
+  --ink: #141413;
+  --muted: #6f6d66;
+  --rule: #d6d3c8;
+  --rule-strong: #141413;
+  --hl: #d7f54b;          /* marca-texto: único destaque */
+  --in: #2d6a3e;          /* entrada */
+  --out: #b4361d;         /* saída */
+  --warn: #8a5a00;
+
+  /* aliases mantidos para compatibilidade com o código existente */
+  --bg: var(--paper);
+  --surface: var(--paper);
+  --surface-strong: var(--paper);
+  --text: var(--ink);
+  --border: var(--rule);
+  --primary: var(--ink);
+  --primary-dark: #000;
+  --success: var(--in);
+  --danger: var(--out);
+  --warning: var(--warn);
+  --success-bg: transparent;
+  --danger-bg: transparent;
+  --shadow: none;
+
+  --font-ui: 'Space Mono', monospace;
+  --font-display: 'Space Mono', monospace;
+  --font-mono: 'Space Mono', monospace;
+
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #121211;
+    --panel: #191918;
+    --ink: #ecebe4;
+    --muted: #8d8b83;
+    --rule: #2e2d2a;
+    --rule-strong: #ecebe4;
+    --hl: #d7f54b;
+    --in: #8fd19e;
+    --out: #f08a73;
+    --warn: #e0b45a;
+    --primary-dark: #fff;
+  }
+}
+
 * {
   box-sizing: border-box;
+}
+
+::selection {
+  background: var(--hl);
+  color: #141413;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at 88% 0%, rgb(138 224 178 / 5%), transparent 38rem),
-    var(--bg);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+h1, h2, h3, p {
+  font-weight: 400;
 }
 
 button,
 input,
 select {
   font: inherit;
+  color: inherit;
 }
 
 button {
@@ -49,8 +92,8 @@ button {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
 }
 
 #root {
