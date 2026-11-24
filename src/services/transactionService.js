@@ -1,5 +1,9 @@
 import api from './api'
 
+export async function getDashboard(params = {}) {
+  return (await api.get('/dashboard', { params })).data
+}
+
 export async function getTransactions(params = {}) {
   const response = await api.get('/transactions', { params })
   return Array.isArray(response.data)

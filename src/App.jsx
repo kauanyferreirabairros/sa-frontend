@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 
 import {
   createTransaction,
   deleteTransaction,
   getTransactions,
+  getDashboard,
   updateTransaction,
 } from './services/transactionService'
 import {
@@ -29,8 +30,10 @@ export default function App() {
   const [user, setUser] = useState(null)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
   const [transactionPage, setTransactionPage] = useState({ page: 1, pageSize: 10, total: 0, totalPages: 0 })
+  const [dashboard, setDashboard] = useState(null)
+  const [dataVersion, setDataVersion] = useState(0)
 
-  async function loadTransactions(params = {}) {
+  const loadTransactions = useCallback(async (params = {}) => {
     setLoading(true)
     setError(null)
 
@@ -43,14 +46,22 @@ export default function App() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  const loadDashboard = useCallback(async () => {
+    try {
+      setDashboard(await getDashboard())
+    } catch {
+      setError('Erro ao carregar o dashboard.')
+    }
+  }, [])
 
   useEffect(() => {
     async function boot() {
       try {
         const currentUser = await getCurrentUser()
         setUser(currentUser)
-        await loadTransactions()
+        await Promise.all([loadTransactions(), loadDashboard()])
       } catch {
         localStorage.removeItem('authToken')
         setUser(null)
@@ -61,18 +72,18 @@ export default function App() {
     }
 
     boot()
-  }, [])
+  }, [loadTransactions, loadDashboard])
 
   async function handleLogin(credentials) {
     const loggedUser = await login(credentials)
     setUser(loggedUser)
-    await loadTransactions()
+    await Promise.all([loadTransactions(), loadDashboard()])
   }
 
   async function handleRegister(userData) {
     const registeredUser = await register(userData)
     setUser(registeredUser)
-    await loadTransactions()
+    await Promise.all([loadTransactions(), loadDashboard()])
   }
 
   async function handleLogout() {
@@ -81,6 +92,7 @@ export default function App() {
     } finally {
       setUser(null)
       setTransactions([])
+      setDashboard(null)
       setActiveTab('dashboard')
       setSelectedTransaction(null)
       setMessage('')
@@ -88,10 +100,7 @@ export default function App() {
     }
   }
 
-  const saldo = transactions.reduce(
-    (acc, t) => t.tipo === 'entrada' ? acc + Number(t.valor) : acc - Number(t.valor),
-    0
-  )
+  const saldo = dashboard?.geral?.saldo ?? 0
 
   async function handleSave(transaction) {
     setError(null)
@@ -110,6 +119,8 @@ export default function App() {
 
       setSelectedTransaction(null)
       setActiveTab('dashboard')
+      setDataVersion(version => version + 1)
+      await loadDashboard()
     } catch {
       setError('Erro ao salvar transação.')
     }
@@ -122,6 +133,8 @@ export default function App() {
     try {
       await deleteTransaction(id)
       setTransactions(prev => prev.filter(t => t.id !== id))
+      setDataVersion(version => version + 1)
+      await loadDashboard()
       if (selectedTransaction?.id === id) {
         setSelectedTransaction(null)
       }
@@ -139,8 +152,8 @@ export default function App() {
   }
 
   const pages = {
-    dashboard: <Dashboard transactions={transactions} />,
-    transacoes: <Tabela transactions={transactions} pagination={transactionPage} onQueryChange={loadTransactions} onDelete={handleDelete} onEdit={handleEdit} />,
+    dashboard: <Dashboard transactions={transactions} dashboard={dashboard} />,
+    transacoes: <Tabela key={dataVersion} transactions={transactions} pagination={transactionPage} loading={loading} onQueryChange={loadTransactions} onDelete={handleDelete} onEdit={handleEdit} />,
     cadastro: (
       <Formulario
         key={selectedTransaction?.id || 'new-transaction'}
@@ -170,7 +183,7 @@ export default function App() {
       <main className="main">
         {message && <div className="app-success">{message}</div>}
         {error && <div className="app-error">{error}</div>}
-        {loading ? <div className="app-loading">Carregando...</div> : pages[activeTab]}
+        {pages[activeTab]}
       </main>
     </div>
   )

@@ -10,13 +10,15 @@ function SortIcon({ field, sortField, sortDir }) {
   )
 }
 
-export default function Tabela({ transactions, pagination, onQueryChange, onDelete, onEdit }) {
+export default function Tabela({ transactions, pagination, loading, onQueryChange, onDelete, onEdit }) {
   const [filterTipo, setFilterTipo] = useState('todos')
   const [sortField, setSortField] = useState('data')
   const [sortDir, setSortDir] = useState('desc')
   const [search, setSearch] = useState('')
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
+  const [dataInicio, setDataInicio] = useState('')
+  const [dataFim, setDataFim] = useState('')
 
   useEffect(() => {
     const timer = setTimeout(() => setQuery(search.trim()), 300)
@@ -29,10 +31,12 @@ export default function Tabela({ transactions, pagination, onQueryChange, onDele
       pageSize: pagination?.pageSize || 10,
       ...(filterTipo !== 'todos' && { tipo: filterTipo }),
       ...(query && { q: query }),
+      ...(dataInicio && { dataInicio }),
+      ...(dataFim && { dataFim }),
       sortBy: sortField,
       sortOrder: sortDir,
     })
-  }, [page, filterTipo, query, sortField, sortDir])
+  }, [page, filterTipo, query, dataInicio, dataFim, sortField, sortDir, onQueryChange, pagination?.pageSize])
 
   function handleSort(field) {
     if (sortField === field) {
@@ -80,7 +84,11 @@ export default function Tabela({ transactions, pagination, onQueryChange, onDele
           ))}
         </div>
         <input aria-label="Buscar transações" placeholder="Buscar descrição ou categoria" value={search} onChange={event => { setSearch(event.target.value); setPage(1) }} />
+        <label>De <input aria-label="Data inicial" type="date" value={dataInicio} onChange={event => { setDataInicio(event.target.value); setPage(1) }} /></label>
+        <label>Até <input aria-label="Data final" type="date" value={dataFim} onChange={event => { setDataFim(event.target.value); setPage(1) }} /></label>
       </header>
+
+      {loading && <p role="status">Atualizando transações...</p>}
 
       <div className="table-wrap">
         <table className="table">
@@ -150,8 +158,8 @@ export default function Tabela({ transactions, pagination, onQueryChange, onDele
 
       <div className="table-footer">
         {pagination?.total ?? filtered.length} registro(s) · Página {pagination?.page || page} de {Math.max(1, pagination?.totalPages || 1)}
-        <button disabled={page <= 1} onClick={() => setPage(current => current - 1)}>Anterior</button>
-        <button disabled={page >= (pagination?.totalPages || 1)} onClick={() => setPage(current => current + 1)}>Próxima</button>
+        <button disabled={loading || page <= 1} onClick={() => setPage(current => current - 1)}>Anterior</button>
+        <button disabled={loading || page >= (pagination?.totalPages || 1)} onClick={() => setPage(current => current + 1)}>Próxima</button>
       </div>
     </div>
   )

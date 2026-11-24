@@ -1,15 +1,15 @@
 import { formatCurrency, formatDate } from '../utils/format'
 
-export default function Dashboard({ transactions }) {
-  const totalEntradas = transactions
+export default function Dashboard({ transactions, dashboard }) {
+  const totalEntradas = dashboard?.geral?.entradas ?? transactions
     .filter(t => t.tipo === 'entrada')
     .reduce((s, t) => s + Number(t.valor), 0)
 
-  const totalSaidas = transactions
+  const totalSaidas = dashboard?.geral?.saidas ?? transactions
     .filter(t => t.tipo === 'saida')
     .reduce((s, t) => s + Number(t.valor), 0)
 
-  const saldo = totalEntradas - totalSaidas
+  const saldo = dashboard?.geral?.saldo ?? (totalEntradas - totalSaidas)
 
   const categoriaMap = {}
   transactions
@@ -17,7 +17,9 @@ export default function Dashboard({ transactions }) {
     .forEach(t => {
       categoriaMap[t.categoria] = (categoriaMap[t.categoria] || 0) + Number(t.valor)
     })
-  const topCategorias = Object.entries(categoriaMap)
+  const topCategorias = (dashboard?.gastosPorCategoria
+    ? dashboard.gastosPorCategoria.map(item => [item.categoria, item.total])
+    : Object.entries(categoriaMap))
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
   const maxCat = topCategorias[0]?.[1] || 1
@@ -46,7 +48,7 @@ export default function Dashboard({ transactions }) {
           <div className="card-label">Total Entradas</div>
           <div className="card-value pos">{formatCurrency(totalEntradas)}</div>
           <div className="card-sub">
-            {transactions.filter(t => t.tipo === 'entrada').length} transações
+            {dashboard?.geral?.quantidadeEntradas ?? transactions.filter(t => t.tipo === 'entrada').length} transações
           </div>
         </div>
 
@@ -54,13 +56,13 @@ export default function Dashboard({ transactions }) {
           <div className="card-label">Total Saídas</div>
           <div className="card-value neg">{formatCurrency(totalSaidas)}</div>
           <div className="card-sub">
-            {transactions.filter(t => t.tipo === 'saida').length} transações
+            {dashboard?.geral?.quantidadeSaidas ?? transactions.filter(t => t.tipo === 'saida').length} transações
           </div>
         </div>
 
         <div className="card card--count">
           <div className="card-label">Transações</div>
-          <div className="card-value neutral">{transactions.length}</div>
+          <div className="card-value neutral">{dashboard?.geral?.quantidade ?? transactions.length}</div>
           <div className="card-sub">registros no total</div>
         </div>
       </div>
@@ -91,7 +93,7 @@ export default function Dashboard({ transactions }) {
         <section className="recentes-section">
           <h2>Últimas Transações</h2>
           <div className="recentes-list">
-            {transactions.slice(0, 5).map(t => (
+            {(dashboard?.recentes || transactions.slice(0, 5)).map(t => (
               <div key={t.id} className="recente-item">
                 <div className={`recente-dot ${t.tipo}`} />
                 <div className="recente-info">
