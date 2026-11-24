@@ -29,7 +29,11 @@ export default function Dashboard({ transactions, dashboard }) {
       <header className="page-header">
         <div>
           <h1>Dashboard</h1>
-          <p>Resumo do seu fluxo financeiro neste período</p>
+          <p>
+            {dashboard?.periodo
+              ? `Totais do mês atual: ${formatDate(dashboard.periodo.inicio)} a ${formatDate(dashboard.periodo.fim)}`
+              : 'Totais do mês atual, do primeiro dia até hoje'}
+          </p>
         </div>
       </header>
 
