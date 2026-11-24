@@ -2,8 +2,9 @@
 
 ## Projeto publicado
 
+- **Vídeo Demonstrativo:** https://drive.google.com/file/d/1ExJLDZD8T8nJT7cj_61qfOAIg0TyBrAU/view?usp=sharing
 - **Site:** https://safecash3b.netlify.app/
-- **Hospedagem:** Netlify (site estático gerado pelo Vite).
+- **Hospedagem:** Netlify
 - **API:** https://backend-sa-lkje.onrender.com
 
 O frontend usa `VITE_API_URL` para acessar a API. Essa variável é incorporada no build; no Netlify, configure-a com `https://backend-sa-lkje.onrender.com` e publique um novo deploy sempre que alterar o valor.
