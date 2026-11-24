@@ -1,4 +1,12 @@
-# FinançaS --- Documentação do Frontend
+# SafeCash — Documentação do Frontend
+
+## Projeto publicado
+
+- **Site:** https://safecash3b.netlify.app/
+- **Hospedagem:** Netlify (site estático gerado pelo Vite).
+- **API:** https://backend-sa-lkje.onrender.com
+
+O frontend usa `VITE_API_URL` para acessar a API. Essa variável é incorporada no build; no Netlify, configure-a com `https://backend-sa-lkje.onrender.com` e publique um novo deploy sempre que alterar o valor.
 
 ## 1. Visão geral
 
